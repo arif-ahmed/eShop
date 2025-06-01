@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace eShop.Models.Catalog;
 
-namespace eShop.Models.Catalog
+public class Category
 {
-    internal class Category
-    {
-    }
 }
