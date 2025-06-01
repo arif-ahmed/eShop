@@ -4,7 +4,7 @@ namespace eShop.Web.Controllers.Apis;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ProductController : ControllerBase
+public class ProductsController : ControllerBase
 {
     [HttpGet]
     public IActionResult Get()

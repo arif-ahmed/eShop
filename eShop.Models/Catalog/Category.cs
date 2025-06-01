@@ -1,5 +1,8 @@
-﻿namespace eShop.Models.Catalog;
+﻿using System.Collections.ObjectModel;
 
-public class Category
+namespace eShop.Models.Catalog;
+public class Category : EntityBase
 {
+    public string? Name { get; set; }
+    public ICollection<Product> Products { get; set; } = new Collection<Product>();
 }
