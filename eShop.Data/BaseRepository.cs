@@ -18,9 +18,9 @@ public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : Enti
         _context.Add(entity);
     }
 
-    public void Delete(Guid id)
+    public async Task Delete(Guid id)
     {
-        var entity = _context.Set<TEntity>().Find(id);
+        var entity = await _context.Set<TEntity>().FindAsync(id);
         if (entity != null)
         {
             _context.Remove(entity);

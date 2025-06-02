@@ -27,14 +27,16 @@ namespace eShop.Web.Controllers.Apis
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             // Simulate fetching a category by ID
-            var category = $"Category {id}";
-            if (string.IsNullOrEmpty(category))
+            var category = await _repository.GetByIdAsync(id); // This is just for simulation, avoid using .Wait() in production code
+            
+            if (category == null)
             {
                 return NotFound();
             }
+
             return Ok(category);
         }
 
@@ -59,24 +61,31 @@ namespace eShop.Web.Controllers.Apis
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(Guid id, [FromBody] string category)
+        public async Task<IActionResult> Update(Guid id, [FromBody] string category)
         {
             if (string.IsNullOrEmpty(category))
             {
                 return BadRequest("Category cannot be empty.");
             }
-            // Simulate updating a category
+
+            var categoryToUpdate = await _repository.GetByIdAsync(id);
+            _repository.Update(categoryToUpdate);
+            await _repository.SaveChangesAsync();
+
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             // Simulate deleting a category
             if (id == Guid.Empty)
             {
                 return BadRequest("Invalid category ID.");
             }
+
+            await _repository.Delete(id);
+
             return NoContent();
         }
     }
