@@ -10,19 +10,16 @@ namespace eShop.Web.Controllers.Apis
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private readonly EShopDbContext _context;
         private readonly IRepository<Category> _repository;
-        public CategoriesController(EShopDbContext context, IRepository<Category> repository) 
+        public CategoriesController(IRepository<Category> repository) 
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            await _repository.GetAllAsync(x => x.Name == "A");
-            var categories = _context.Categories.ToList(); // Simulate fetching categories from the database
+            var categories = await _repository.GetAllAsync(x => x.Name == "A");
             return Ok(categories);
         }
 
@@ -41,7 +38,7 @@ namespace eShop.Web.Controllers.Apis
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] CreateCategoryDTO category)
+        public async Task<IActionResult> Create([FromBody] CreateCategoryDTO category)
         {
             if (string.IsNullOrEmpty(category.CategoryName))
             {
@@ -49,13 +46,13 @@ namespace eShop.Web.Controllers.Apis
             }
             // Simulate creating a category
 
-            _context.Categories.Add(new Category
+            _repository.Add(new Category
             {
                 Id = Guid.NewGuid(),
                 Name = category.CategoryName
             });
 
-            _context.SaveChanges(); // Simulate saving to the database
+            await _repository.SaveChangesAsync(); // Simulate saving to the database
 
             return CreatedAtAction(nameof(GetById), new { id = Guid.NewGuid() }, category);
         }
