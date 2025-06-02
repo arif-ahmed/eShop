@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using eShop.Data;
+using eShop.Models.Catalog;
+using eShop.Web.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace eShop.Web.Controllers.Apis
 {
@@ -6,18 +9,16 @@ namespace eShop.Web.Controllers.Apis
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        public CategoriesController() { }
+        private readonly EShopDbContext _context;
+        public CategoriesController(EShopDbContext context) 
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+        }
 
         [HttpGet]
         public IActionResult Get()
         {
-            var categories = new List<string>
-            {
-                "Category 1",
-                "Category 2",
-                "Category 3"
-            };
-
+            var categories = _context.Categories.ToList(); // Simulate fetching categories from the database
             return Ok(categories);
         }
 
@@ -34,13 +35,22 @@ namespace eShop.Web.Controllers.Apis
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] string category)
+        public IActionResult Create([FromBody] CreateCategoryDTO category)
         {
-            if (string.IsNullOrEmpty(category))
+            if (string.IsNullOrEmpty(category.CategoryName))
             {
                 return BadRequest("Category cannot be empty.");
             }
             // Simulate creating a category
+
+            _context.Categories.Add(new Category
+            {
+                Id = Guid.NewGuid(),
+                Name = category.CategoryName
+            });
+
+            _context.SaveChanges(); // Simulate saving to the database
+
             return CreatedAtAction(nameof(GetById), new { id = Guid.NewGuid() }, category);
         }
 
