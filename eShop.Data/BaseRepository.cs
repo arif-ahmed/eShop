@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace eShop.Data;
 
-public class BaseRepository : IRepository
+public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : EntityBase
 {
     protected readonly EShopDbContext _context;
     public BaseRepository(EShopDbContext context)
@@ -13,14 +13,14 @@ public class BaseRepository : IRepository
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public void Add(EntityBase entity)
+    public void Add(TEntity entity)
     {
         _context.Add(entity);
     }
 
     public void Delete(Guid id)
     {
-        var entity = _context.Set<EntityBase>().Find(id);
+        var entity = _context.Set<TEntity>().Find(id);
         if (entity != null)
         {
             _context.Remove(entity);
@@ -31,19 +31,19 @@ public class BaseRepository : IRepository
         }
     }
 
-    public async Task<IEnumerable<EntityBase>> GetAllAsync(Expression<Func<EntityBase, bool>> expression)
+    public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? expression)
     {
         if (expression == null)
         {
             throw new ArgumentNullException(nameof(expression));
         }
-        var entities = await _context.Set<EntityBase>().Where(expression).ToListAsync();
+        var entities = await _context.Set<TEntity>().Where(expression).ToListAsync();
         return entities;
     }
 
-    public async Task<EntityBase> GetByIdAsync(Guid id)
+    public async Task<TEntity> GetByIdAsync(Guid id)
     {
-        var entity = await _context.Set<EntityBase>().FindAsync(id);
+        var entity = await _context.Set<TEntity>().FindAsync(id);
 
         if (entity == null)
         {
@@ -54,7 +54,7 @@ public class BaseRepository : IRepository
     }
 
 
-    public void Update(EntityBase entity)
+    public void Update(TEntity entity)
     {
         if (entity == null)
         {

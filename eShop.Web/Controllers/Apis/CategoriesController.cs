@@ -1,4 +1,5 @@
 ﻿using eShop.Data;
+using eShop.Data.Contracts;
 using eShop.Models.Catalog;
 using eShop.Web.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -10,14 +11,17 @@ namespace eShop.Web.Controllers.Apis
     public class CategoriesController : ControllerBase
     {
         private readonly EShopDbContext _context;
-        public CategoriesController(EShopDbContext context) 
+        private readonly IRepository<Category> _repository;
+        public CategoriesController(EShopDbContext context, IRepository<Category> repository) 
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
+            await _repository.GetAllAsync(x => x.Name == "A");
             var categories = _context.Categories.ToList(); // Simulate fetching categories from the database
             return Ok(categories);
         }

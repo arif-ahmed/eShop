@@ -3,12 +3,12 @@ using System.Linq.Expressions;
 
 namespace eShop.Data.Contracts;
 
-public interface IRepository
+public interface IRepository<TEntity> where TEntity : EntityBase
 {
-    void Add(EntityBase entity);
-    void Update(EntityBase entity);
+    void Add(TEntity entity);
+    void Update(TEntity entity);
     void Delete(Guid id);
     Task SaveChangesAsync();
-    Task<EntityBase> GetByIdAsync(Guid id);
-    Task<IEnumerable<EntityBase>> GetAllAsync(Expression<Func<EntityBase,bool>> expression);
+    Task<TEntity> GetByIdAsync(Guid id);
+    Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? expression);
 }

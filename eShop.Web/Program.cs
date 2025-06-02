@@ -1,4 +1,5 @@
 using eShop.Data;
+using eShop.Data.Contracts;
 using Microsoft.EntityFrameworkCore;
 
 namespace eShop.Web
@@ -11,6 +12,9 @@ namespace eShop.Web
 
             // Add services to the container.
             builder.Services.AddDbContext<EShopDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
+
 
             builder.Services.AddControllersWithViews();
 
