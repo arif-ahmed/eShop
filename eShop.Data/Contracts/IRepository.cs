@@ -8,7 +8,8 @@ public interface IRepository<TEntity> where TEntity : EntityBase
     void Add(TEntity entity);
     void Update(TEntity entity);
     Task Delete(Guid id);
-    Task SaveChangesAsync();
+    Task SaveChangesAsync(CancellationToken cancellationToken = default);
     Task<TEntity> GetByIdAsync(Guid id);
-    Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? expression);
+    Task<IEnumerable<TEntity>> GetAllAsync();    
+    Task<List<TEntity>> Filter(Expression<Func<TEntity, bool>> expression, string sortBY, string sortOrder, int offset = 0, int limit = 100);
 }

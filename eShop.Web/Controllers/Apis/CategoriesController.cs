@@ -19,7 +19,7 @@ namespace eShop.Web.Controllers.Apis
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var categories = await _repository.GetAllAsync(x => x.Name == "A");
+            var categories = await _repository.GetAllAsync();
             return Ok(categories);
         }
 

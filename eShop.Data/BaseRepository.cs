@@ -1,6 +1,8 @@
 ﻿using eShop.Data.Contracts;
 using eShop.Models;
+using eShop.Models.Contracts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Linq.Expressions;
 
 namespace eShop.Data;
@@ -31,14 +33,11 @@ public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : Enti
         }
     }
 
-    public async Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? expression)
+    public async Task<IEnumerable<TEntity>> GetAllAsync()
     {
-        if (expression == null)
-        {
-            throw new ArgumentNullException(nameof(expression));
-        }
-        var entities = await _context.Set<TEntity>().Where(expression).ToListAsync();
-        return entities;
+        return await _context.Set<TEntity>()
+            .Where(e => !e.IsDeleted) 
+            .ToListAsync();
     }
 
     public async Task<TEntity> GetByIdAsync(Guid id)
@@ -63,8 +62,25 @@ public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : Enti
         _context.Update(entity);
     }
 
-    public async Task SaveChangesAsync()
+    public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        await _context.SaveChangesAsync();        
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public Task<List<TEntity>> Filter(Expression<Func<TEntity, bool>> expression, string sortBY, string sortOrder = "asc", int offset = 0, int limit = 100)
+    {
+        var query = _context.Set<TEntity>().Where(expression).AsQueryable();
+        if (!string.IsNullOrEmpty(sortBY))
+        {
+            if (sortOrder.Equals("asc", StringComparison.OrdinalIgnoreCase))
+            {
+                query = query.OrderBy(e => EF.Property<object>(e, sortBY));
+            }
+            else if (sortOrder.Equals("desc", StringComparison.OrdinalIgnoreCase))
+            {
+                query = query.OrderByDescending(e => EF.Property<object>(e, sortBY));
+            }
+        }
+        return query.Skip(offset).Take(limit).ToListAsync();
     }
 }
