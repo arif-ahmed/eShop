@@ -11,5 +11,5 @@ public interface IRepository<TEntity> where TEntity : EntityBase
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
     Task<TEntity> GetByIdAsync(Guid id);
     Task<IEnumerable<TEntity>> GetAllAsync();    
-    Task<List<TEntity>> Filter(Expression<Func<TEntity, bool>> expression, string sortBY, string sortOrder, int offset = 0, int limit = 100);
+    Task<FilterDataResponse> Filter(Expression<Func<TEntity, bool>> expression, string sortBY, string sortOrder, int offset = 0, int limit = 100);
 }

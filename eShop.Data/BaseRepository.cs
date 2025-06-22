@@ -67,7 +67,7 @@ public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : Enti
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public Task<List<TEntity>> Filter(Expression<Func<TEntity, bool>> expression, string sortBY, string sortOrder = "asc", int offset = 0, int limit = 100)
+    public async Task<FilterDataResponse> Filter(Expression<Func<TEntity, bool>> expression, string sortBY, string sortOrder = "asc", int offset = 0, int limit = 100)
     {
         var query = _context.Set<TEntity>().Where(expression).AsQueryable();
         if (!string.IsNullOrEmpty(sortBY))
@@ -81,6 +81,23 @@ public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : Enti
                 query = query.OrderByDescending(e => EF.Property<object>(e, sortBY));
             }
         }
-        return query.Skip(offset).Take(limit).ToListAsync();
+
+        var count = await query.CountAsync();
+
+        var response = await query.Skip(offset).Take(limit).ToListAsync();
+
+        var result = new FilterDataResponse
+        {
+            TotalCount = count,
+            Items = response.Select(e => e) // Convert to object to match the response type
+        };
+
+        return result;
     }
+}
+
+public class FilterDataResponse 
+{
+    public int TotalCount { get; set; }
+    public IEnumerable<EntityBase> Items { get; set; } = Enumerable.Empty<EntityBase>();
 }

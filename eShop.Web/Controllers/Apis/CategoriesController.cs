@@ -2,7 +2,9 @@
 using eShop.Data.Contracts;
 using eShop.Models.Catalog;
 using eShop.Web.Models;
+using eShop.Web.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace eShop.Web.Controllers.Apis
 {
