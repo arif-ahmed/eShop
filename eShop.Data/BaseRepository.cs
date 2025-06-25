@@ -15,9 +15,9 @@ public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : Enti
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public void Add(TEntity entity)
+    public async Task Add(TEntity entity)
     {
-        _context.Add(entity);
+        await _context.AddAsync(entity);        
     }
 
     public async Task Delete(Guid id)
@@ -53,13 +53,14 @@ public class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : Enti
     }
 
 
-    public void Update(TEntity entity)
+    public Task Update(TEntity entity)
     {
         if (entity == null)
         {
             throw new ArgumentNullException(nameof(entity));
         }
         _context.Update(entity);
+        return Task.CompletedTask;
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)

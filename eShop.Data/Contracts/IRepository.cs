@@ -5,8 +5,8 @@ namespace eShop.Data.Contracts;
 
 public interface IRepository<TEntity> where TEntity : EntityBase
 {
-    void Add(TEntity entity);
-    void Update(TEntity entity);
+    Task Add(TEntity entity);
+    Task Update(TEntity entity);
     Task Delete(Guid id);
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
     Task<TEntity> GetByIdAsync(Guid id);
